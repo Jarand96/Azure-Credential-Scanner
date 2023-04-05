@@ -3,3 +3,4 @@ azure-mgmt-resource
 azure-cli-core
 azure.identity
 argparse
+azure-mgmt-logic
