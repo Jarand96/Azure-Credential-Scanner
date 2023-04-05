@@ -11,8 +11,8 @@ from azure.mgmt.resource import ResourceManagementClient
 
 # Look for key in dict
 def gen_dict_extract(key, var):
-    if hasattr(var,'items'): # hasattr(var,'items') for python 3
-        for k, v in var.items(): # var.items() for python 3
+    if hasattr(var,'items'):
+        for k, v in var.items():
             if k.lower() == key:
                 yield v
             if isinstance(v, dict):
@@ -22,13 +22,6 @@ def gen_dict_extract(key, var):
                 for d in v:
                     for result in gen_dict_extract(key, d):
                         yield result
-
-# Dirty lists contain secrets
-def isListDirty(list1):
-    if len(list1) == 0:
-        return 0
-    else:
-        return 1
 
 # Make wordlist from inputted file.
 def parse_wordlist(filename):
@@ -42,21 +35,22 @@ def parse_wordlist(filename):
 # Use this function to look for secrets in logic apps
 def find_words_in_objects(list_of_words, list_of_apps):
     list_of_objects_with_words = []
-    # Gå gjennom en og en app
+    # Go through every app in list
     for app in list_of_apps:
         appAddedInList = False
         app['identified_creds'] = []
-        # Gjør dette for hvert ord
+        # For every word in the wordlist
         for i, word in enumerate(list_of_words):
-            #Look for word in dictionary
+            #Look for word in app
             result = gen_dict_extract(word,app)
             temp_result = (list(result))
-            # It found word in code.
+            # If there is anything in the returned list, a secret was found
             if len(temp_result) > 0:
-                # add it
+                # Add the app to list, but only do it once.  
                 if not appAddedInList:
                     list_of_objects_with_words.append(app)
                     appAddedInList = True
+                # Save the identified credential in the app object.
                 app['identified_creds'].append({word: temp_result})
     return list_of_objects_with_words
 
