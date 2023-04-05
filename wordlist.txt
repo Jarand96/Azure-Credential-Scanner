@@ -1,0 +1,16 @@
+secret
+password
+token
+access_token
+api_token
+api_key
+apikey
+key
+ssh_key
+sshkey
+private_key
+privatekey
+webhook
+username
+sastoken
+sasblobtoken

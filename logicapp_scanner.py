@@ -13,7 +13,7 @@ from azure.mgmt.resource import ResourceManagementClient
 def gen_dict_extract(key, var):
     if hasattr(var,'items'): # hasattr(var,'items') for python 3
         for k, v in var.items(): # var.items() for python 3
-            if k == key:
+            if k.lower() == key:
                 yield v
             if isinstance(v, dict):
                 for result in gen_dict_extract(key, v):
@@ -40,17 +40,26 @@ def parse_wordlist(filename):
     return word_list
 
 # Use this function to look for secrets in logic apps
-def find_words_in_objects(list_of_words, list_of_objects):
+def find_words_in_objects(list_of_words, list_of_apps):
     list_of_objects_with_words = []
-    for i, word in enumerate(list_of_words):
-        for app in list_of_objects:
+    # Gå gjennom en og en app
+    for app in list_of_apps:
+        appAddedInList = False
+        app['identified_creds'] = []
+        # Gjør dette for hvert ord
+        for i, word in enumerate(list_of_words):
             #Look for word in dictionary
             result = gen_dict_extract(word,app)
             temp_result = (list(result))
-            if isListDirty(temp_result):
-                app['identified_creds'] = "{0} : {1}".format(word, temp_result)
-                list_of_objects_with_words.append(app)
+            # It found word in code.
+            if len(temp_result) > 0:
+                # add it
+                if not appAddedInList:
+                    list_of_objects_with_words.append(app)
+                    appAddedInList = True
+                app['identified_creds'].append({word: temp_result})
     return list_of_objects_with_words
+
 
 # Take in command line arguments.  
 parser = argparse.ArgumentParser(description='Scan Azure subscription for dirty stuff')
@@ -99,10 +108,11 @@ logic_apps_with_credentials = find_words_in_objects(listofwords, listofworkflows
 
 if len(logic_apps_with_credentials) == 0:
     sys.exit("Could not find the specified words in any logic apps.")
+print("number of objects with credentials: " + str(len(logic_apps_with_credentials)))
 print("These are the logic apps that contains credentials")
 for logicapp in logic_apps_with_credentials:
     print("\n")
     print("Resource id: " + logicapp['id'])
     print("Name " + logicapp['name'])
-    print("Credentials: " + logicapp['identified_creds'])
+    print("Credentials: " + str(logicapp['identified_creds']))
     print("\n")
