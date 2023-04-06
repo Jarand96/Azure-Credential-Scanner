@@ -22,6 +22,7 @@ python3 logicapp_scanner.py -w secret,password -sid <subscription_id>
 ```
 
 ### Example 2: Scan for keywords in separate file.
+The tool also supports your custom wordlists.
 ```bash
 python3 logicapp_scanner.py -f <filename> -sid <subscription_id>
 ```
