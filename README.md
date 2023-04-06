@@ -1,6 +1,7 @@
 # Azure-Credential-Scanner
-A Python scanner that will scan your Azure environment for credentials. 
+Exposed credentials are a common way for attackers to gain access to higher privilege accounts and systems in cloud environments. Unfortunately, many developers are not aware of this threat and will often make the mistake of storing credentials and other sensitive information in their code. Manually going through all those lines of code can be both time-consuming and boring as hell. That is why I have created this little tool to scan a deployed code base for you. 
 
+Currently, the tool only supports scanning Logic app code, but it is under heavy development and will extend to function apps and other Azure services soon. 
 
 ## Installation
 
