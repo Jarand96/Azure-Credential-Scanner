@@ -18,7 +18,9 @@ To run the script you must first be authenticated to the Azure CLI.
 When you have successfully authenticated, you'll be ready to run the script:
 ```bash
 python3 logicapp_scanner.py -h
+```
 
+```
 usage: logicapp_scanner.py [-h] [-w WORDLIST] -sid SUBSCRIPTIONID [-f FILENAME] [-o {print,csv}]
 
 Scan Azure subscription for dirty stuff
