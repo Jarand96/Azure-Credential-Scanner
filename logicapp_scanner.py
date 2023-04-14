@@ -1,6 +1,7 @@
 import re
 import argparse
 import sys
+import csv
 
 # Import specific methods and models from other libraries
 from azure.identity import DefaultAzureCredential
@@ -21,6 +22,15 @@ def gen_dict_extract(word, var):
                 for d in v:
                     for result in gen_dict_extract(word, d):
                         yield result
+
+# If user wants the results written to CSV
+def write_output_to_csv(list_of_logic_apps):
+    header = ['Resource_id', 'Name', 'Credentials']
+    with open('results.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for logicapp in list_of_logic_apps:
+            writer.writerow([logicapp['id'],logicapp['name'], str(logicapp['identified_creds'])])
 
 # Make wordlist from inputted file.
 def parse_wordlist(filename):
@@ -97,6 +107,8 @@ parser.add_argument('-sid', '--subscriptionid', type=str, nargs=1, required=True
                     help='Specify the ID of the subcription you want to scan.')
 parser.add_argument('-f', '--filename', type=str, nargs=1,
                     help='File with words to scan')
+parser.add_argument('-o', '--output', type=str, default="print", choices=['print', 'csv'],
+                    help='Specify how you want to output the results.')
 args = parser.parse_args()
 
 if args.wordlist is None and args.filename is None:
@@ -159,11 +171,20 @@ for app in listofworkflows:
 
 if len(logic_apps_with_credentials) == 0:
     sys.exit("Could not find the specified words in any logic apps.")
+
+if(args.output == "csv"):
+    write_output_to_csv(logic_apps_with_credentials)
+    sys.exit("Wrote results to csv file.")
+
 print("Number of objects with credentials: " + str(len(logic_apps_with_credentials)))
 print("These are the logic apps that contains credentials")
+
 for logicapp in logic_apps_with_credentials:
     print("\n")
     print("Resource id: " + logicapp['id'])
-    print("Name " + logicapp['name'])
-    print("Credentials: " + str(logicapp['identified_creds']))
+    print("Name: " + logicapp['name'])
+    print("The following sensitive data was identified: ")
+    for item in logicapp['identified_creds']:
+        print(item)
+    #print("Credentials: " + str(logicapp['identified_creds']))
     print("\n")
