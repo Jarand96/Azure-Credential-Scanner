@@ -15,7 +15,26 @@ pip install -r requirements.txt
 ## Usage
 To run the script you must first be authenticated to the Azure CLI.
 
-When you have successfully authenticated, run the script:
+When you have successfully authenticated, you'll be ready to run the script:
+```bash
+python3 logicapp_scanner.py -h
+
+usage: logicapp_scanner.py [-h] [-w WORDLIST] -sid SUBSCRIPTIONID [-f FILENAME] [-o {print,csv}]
+
+Scan Azure subscription for dirty stuff
+
+options:
+  -h, --help            show this help message and exit
+  -w WORDLIST, --wordlist WORDLIST
+                        A comma separated list of words to search for in the logic app.
+  -sid SUBSCRIPTIONID, --subscriptionid SUBSCRIPTIONID
+                        Specify the ID of the subcription you want to scan.
+  -f FILENAME, --filename FILENAME
+                        File with words to scan
+  -o {print,csv}, --output {print,csv}
+                        Specify how you want to output the results.
+```
+
 ### Example 1: Scan for keywords specified in command line.
 ```bash
 python3 logicapp_scanner.py -w secret,password -sid <subscription_id>
